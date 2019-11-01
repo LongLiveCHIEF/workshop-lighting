@@ -47,7 +47,6 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
-  blinker.detach();
   digitalWrite(LED_BUILTIN, LOW);
   delay(DELAY);
   digitalWrite(LED_BUILTIN, HIGH);
