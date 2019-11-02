@@ -4,10 +4,21 @@
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
 #include <Ticker.h>
+#define FASTLED_ESP8266_NODEMCU_PIN_ORDER
+#include <FastLED.h>
 
-#define DELAY 0.3
 WiFiManager wm;
+
+#define DELAY 1.5
 Ticker blinker;
+
+// FastLED pre-processor definitions
+#define NUM_LEDS 8*32
+#define DATA_PIN 4
+#define LED_TYPE WS2812B
+#define RGB_ORDER GRB
+
+CRGBArray<NUM_LEDS> leds;
 
 void blink(){
   int state = digitalRead(LED_BUILTIN);
@@ -20,6 +31,9 @@ void setup() {
 
   //blink every DELAY so we know program hasn't crashed
   blinker.attach(DELAY, blink);
+
+  // setup LED's
+  FastLED.addLeds<LED_TYPE, DATA_PIN, RGB_ORDER>(leds, NUM_LEDS);
   // setup wifi AP
   WiFi.mode(WIFI_STA);
 
@@ -56,4 +70,6 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
+  leds(0,NUM_LEDS - 1).fill_solid(CRGB::Snow);
+  FastLED.delay(30);
 }
