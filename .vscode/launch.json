@@ -12,7 +12,7 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "/home/chief/code/OTAexample/.pio/build/12e_ota/firmware.elf",
+            "executable": "/home/chief/code/workshop_lighting/.pio/build/12e_ota/firmware.elf",
             "toolchainBinDir": "/home/chief/.platformio/packages/toolchain-xtensa/bin",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -24,7 +24,7 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "/home/chief/code/OTAexample/.pio/build/12e_ota/firmware.elf",
+            "executable": "/home/chief/code/workshop_lighting/.pio/build/12e_ota/firmware.elf",
             "toolchainBinDir": "/home/chief/.platformio/packages/toolchain-xtensa/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }

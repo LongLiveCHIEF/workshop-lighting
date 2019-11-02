@@ -3,14 +3,23 @@
 #include <WiFiManager.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
+#include <Ticker.h>
 
-#define DELAY 2000
+#define DELAY 0.3
 WiFiManager wm;
+Ticker blinker;
+
+void blink(){
+  int state = digitalRead(LED_BUILTIN);
+  digitalWrite(LED_BUILTIN, !state);
+}
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(LED_BUILTIN, LOW);
 
+  //blink every DELAY so we know program hasn't crashed
+  blinker.attach(DELAY, blink);
   // setup wifi AP
   WiFi.mode(WIFI_STA);
 
@@ -47,8 +56,4 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(DELAY);
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(DELAY);
 }
