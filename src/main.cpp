@@ -9,8 +9,10 @@
 
 WiFiManager wm;
 
-#define DELAY 1.5
-Ticker blinker;
+// initialize blinker to use as feedback during firmware updates
+bool blinkerState;
+void blink();
+Ticker firmware_update_blinker(blink, 100);
 
 // FastLED pre-processor definitions
 #define NUM_LEDS 8*32
@@ -20,17 +22,9 @@ Ticker blinker;
 
 CRGBArray<NUM_LEDS> leds;
 
-void blink(){
-  int state = digitalRead(LED_BUILTIN);
-  digitalWrite(LED_BUILTIN, !state);
-}
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
-
-  //blink every DELAY so we know program hasn't crashed
-  blinker.attach(DELAY, blink);
 
   // setup LED's
   FastLED.addLeds<LED_TYPE, DATA_PIN, RGB_ORDER>(leds, NUM_LEDS);
@@ -50,13 +44,15 @@ void setup() {
   }
   //OTA
   ArduinoOTA.onStart([]() {
-    Serial.println("Start OTA");
+    firmware_update_blinker.start();
   });
   ArduinoOTA.onEnd([]() {
-    Serial.println("\nEnd");
+    firmware_update_blinker.stop();
+    digitalWrite(LED_BUILTIN, false);
   });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
     Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+    firmware_update_blinker.update();
   });
   ArduinoOTA.onError([](ota_error_t error) {
     Serial.printf("Error[%u]: ", error);
@@ -72,5 +68,9 @@ void setup() {
 void loop() {
   ArduinoOTA.handle();
   leds(0,NUM_LEDS - 1).fill_solid(CRGB::Snow);
-  FastLED.delay(30);
+}
+
+void blink(){
+  digitalWrite(LED_BUILTIN, blinkerState);
+  blinkerState = !blinkerState;
 }
