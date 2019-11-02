@@ -34,6 +34,7 @@ void setup() {
 
   // setup LED's
   FastLED.addLeds<LED_TYPE, DATA_PIN, RGB_ORDER>(leds, NUM_LEDS);
+  FastLED.setBrightness(100);
   // setup wifi AP
   WiFi.mode(WIFI_STA);
 
