@@ -3,16 +3,10 @@
 #include <WiFiManager.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoOTA.h>
-#include <Ticker.h>
 #define FASTLED_ESP8266_NODEMCU_PIN_ORDER
 #include <FastLED.h>
 
 WiFiManager wm;
-
-// initialize blinker to use as feedback during firmware updates
-bool blinkerState;
-void blink();
-Ticker firmware_update_blinker(blink, 100);
 
 // FastLED pre-processor definitions
 #define NUM_LEDS 8*32
@@ -24,11 +18,12 @@ CRGBArray<NUM_LEDS> leds;
 
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
 
+  FastLED.clearData();
   // setup LED's
   FastLED.addLeds<LED_TYPE, DATA_PIN, RGB_ORDER>(leds, NUM_LEDS);
-  FastLED.setBrightness(100);
+  FastLED.setBrightness(50);
+
   // setup wifi AP
   WiFi.mode(WIFI_STA);
 
@@ -43,16 +38,8 @@ void setup() {
     Serial.println("Config portal running");
   }
   //OTA
-  ArduinoOTA.onStart([]() {
-    firmware_update_blinker.start();
-  });
-  ArduinoOTA.onEnd([]() {
-    firmware_update_blinker.stop();
-    digitalWrite(LED_BUILTIN, false);
-  });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
     Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-    firmware_update_blinker.update();
   });
   ArduinoOTA.onError([](ota_error_t error) {
     Serial.printf("Error[%u]: ", error);
@@ -67,10 +54,6 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
-  leds(0,NUM_LEDS - 1).fill_solid(CRGB::Snow);
-}
-
-void blink(){
-  digitalWrite(LED_BUILTIN, blinkerState);
-  blinkerState = !blinkerState;
+  leds(0, NUM_LEDS-1) = CRGB::Snow;
+  FastLED.delay(30);
 }
